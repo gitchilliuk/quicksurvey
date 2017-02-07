@@ -1,6 +1,7 @@
 # Project
 
-A Quick Survey/Poll between class teacher and students, could be used as feedback form.
+Quick Survey/Poll between class teacher and students, could be used as a feedback form, the teacher can organize some kind of voting among students, or create a general survey for students.
+
 
 ## Getting Started
 
@@ -21,7 +22,7 @@ A NodeJS app for teacher to create some Poll/Survey among their students, socket
 cd <installation folder>
 ```
 e.g. 
-`$ cd studentpoll/`
+`$ cd quicksurvey/`
 
 ```
 npm install
