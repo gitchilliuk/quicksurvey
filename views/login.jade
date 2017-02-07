@@ -1,0 +1,35 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, user-scalable=no')
+        title Polls
+        link(rel='stylesheet' href='//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css')
+        link(rel='stylesheet' href='/stylesheets/style.css')
+        script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js')
+        script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js')
+        script(src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
+        script(src='//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js')
+        script(src='/socket.io/socket.io.js')
+        script(src='/javascripts/app.js')
+        script(src='/javascripts/services.js')
+        script(src='/javascripts/controllers.js')
+    body
+        nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+            div.navbar-header
+                a.navbar-brand(href='#/polls') Polls
+        div.container
+            div
+                form(id="signup", method="POST", action="/login",class="form-signin" role="form")
+                    if(message)
+                        div.alert.alert-danger!=message
+                    h2.form-signin-heading Please sign in
+                    span (Note: if student do not have a password they should provide school login as password)
+                    span (Teacher login starts from 'TEC')
+                    input#username.form-control(type='text', name='username', placeholder='Enter Class ID or Student ID',required=true,autofocus=true,autocomplete=off)
+                    input#password.form-control(type='password', name='password',required=true)
+                    //label.checkbox Remember Me
+                    //    input(type="checkbox",value="remember-me")
+                    button.btn.btn-lg.btn-primary.btn-block(type="submit") Login
+                    div
+                        

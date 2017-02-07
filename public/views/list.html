@@ -1,0 +1,33 @@
+<p class="bg-info" id="newpoll1" style="display: none">New Poll arrived...</p>
+<div class="page-header">
+    <h1>Available Polls</h1>
+</div>
+<div class="row">
+    <div class="col-xs-5" ng-show="polls[0].showit">
+        <a href="#/new" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New Poll</a>
+    </div>
+    <div class="col-xs-7">
+        <input type="text" class="form-control" ng-model="query" placeholder="Search for a poll">
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12"><hr></div>
+</div>
+<div class="row" ng-switch on="polls.length" >
+    <ul ng-switch-when="0">
+        <li><em>No polls in databases. <span ng-show="user.role=='teacher'">Would you like to <a href="#/new">create one</a>?</</em></li>
+    </ul>
+    <ul class="list-group" ng-switch-default>
+        <li class="list-group-item"  ng-repeat="poll in polls| filter:query">
+            <span ng-hide="polls[0].showit">
+                <span class="Voted" ng-show="poll.studentvoted"  go-location="/view/{{poll._id}}">{{poll.question}} (already voted), <span class="pull-right">{{poll.totalvoted}} student(s) voted.</span></span>
+                <span class="NotVoted" ng-hide="poll.studentvoted" go-location="/poll/{{poll._id}}">{{poll.question}}, <span class="pull-right">{{poll.totalvoted}} student(s) voted.</span></span>
+            </span>
+            <span ng-show="poll.showit">
+                <span class="NotVoted" go-location="/view/{{poll._id}}">{{poll.question}}, <span class="pull-right">{{poll.totalvoted}} student(s) voted.</span></span>
+            </span>            
+        </li>
+    </ul>
+</div>
+<p>&nbsp;</p>
+<div id="newpoll2" class="ata-asE" style="width: auto;display: none"><span>A new poll has been introduced by one of your class.</span></div>

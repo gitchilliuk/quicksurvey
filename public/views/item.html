@@ -1,0 +1,31 @@
+<div class="page-header">
+    <h1>View Poll</h1>
+</div>
+<div class="well well-lg">
+    <strong>Question</strong><br>{{poll.question}}
+</div>
+<div>
+    <p class="lead">Please select one of the following options:</p>
+    <form role="form" ng-submit="vote()">
+        <input type="hidden" value="{{poll._id}}" name="_id" />
+        <div ng-repeat="choice in poll.choices" class="radio">
+            <label>
+                <input type="radio" name="choice" ng-model="poll.userVote" value="{{choice._id}}">
+                {{choice.text}}
+            </label>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-6">
+                <a href="#/polls" class="btn btn-default" role="button"><span class="glyphicon glyphicon-arrow-left"></span> Back to Poll List</a>
+            </div>
+            <div class="col-xs-6">
+                <button class="btn btn-primary pull-right" type="submit">Vote &raquo;</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+<p>&nbsp;</p>

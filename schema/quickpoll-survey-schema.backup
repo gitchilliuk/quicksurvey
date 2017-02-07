@@ -1,0 +1,887 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.3.15
+-- Dumped by pg_dump version 9.3.15
+-- Started on 2017-02-07 15:49:38
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 1 (class 3079 OID 11750)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2038 (class 0 OID 0)
+-- Dependencies: 1
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 197 (class 1255 OID 2772314)
+-- Name: checkMatchingStudentName(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION "checkMatchingStudentName"() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$declare
+    master_row masterstudent%rowtype;
+begin
+    select * into master_row from masterstudent where id=new.masterstudentid AND (upper(firstname)<>upper(new.firstname) OR upper(lastname)<>upper(new.lastname));
+    if found  then
+raise exception 'Student: firstname+lastname can not be different for masterstudentid:%, ms.firstname=% ms.lastname=%, New firstname=%, New lastname=%',
+       new.masterstudentid, master_row.firstname, master_row.lastname,new.firstname,new.lastname;
+    end if;
+    return new;
+end$$;
+
+
+ALTER FUNCTION public."checkMatchingStudentName"() OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_with_oids = true;
+
+--
+-- TOC entry 174 (class 1259 OID 2772258)
+-- Name: class; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE class (
+    id integer NOT NULL,
+    schoolid integer NOT NULL,
+    login character varying(10) NOT NULL,
+    password character varying(16) NOT NULL,
+    name character varying(128) NOT NULL,
+    teacherfirst character varying(32),
+    teacherlast character varying(32),
+    email character varying(64),
+    created timestamp with time zone DEFAULT now(),
+    active boolean DEFAULT true
+);
+
+
+ALTER TABLE public.class OWNER TO postgres;
+
+--
+-- TOC entry 173 (class 1259 OID 2772256)
+-- Name: class_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE class_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.class_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2039 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: class_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE class_id_seq OWNED BY class.id;
+
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 176 (class 1259 OID 2772273)
+-- Name: masterstudent; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE masterstudent (
+    id integer NOT NULL,
+    schoolid integer NOT NULL,
+    uid character varying(64) NOT NULL,
+    password character varying(32) NOT NULL,
+    lastname character varying(32) NOT NULL,
+    firstname character varying(32) NOT NULL,
+    gender character(1) NOT NULL,
+    birthdate date,
+    parentemail character varying(64)
+);
+
+
+ALTER TABLE public.masterstudent OWNER TO postgres;
+
+--
+-- TOC entry 175 (class 1259 OID 2772271)
+-- Name: masterstudent_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE masterstudent_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.masterstudent_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2040 (class 0 OID 0)
+-- Dependencies: 175
+-- Name: masterstudent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE masterstudent_id_seq OWNED BY masterstudent.id;
+
+
+--
+-- TOC entry 182 (class 1259 OID 2772382)
+-- Name: node_qp_answers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE node_qp_answers (
+    ansid integer NOT NULL,
+    questionid integer,
+    answer character varying(64)
+);
+
+
+ALTER TABLE public.node_qp_answers OWNER TO postgres;
+
+--
+-- TOC entry 181 (class 1259 OID 2772380)
+-- Name: node_qp_answers_ansid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE node_qp_answers_ansid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.node_qp_answers_ansid_seq OWNER TO postgres;
+
+--
+-- TOC entry 2041 (class 0 OID 0)
+-- Dependencies: 181
+-- Name: node_qp_answers_ansid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE node_qp_answers_ansid_seq OWNED BY node_qp_answers.ansid;
+
+
+--
+-- TOC entry 180 (class 1259 OID 2772369)
+-- Name: node_qp_questions; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE node_qp_questions (
+    id integer NOT NULL,
+    question character varying(100),
+    classid integer
+);
+
+
+ALTER TABLE public.node_qp_questions OWNER TO postgres;
+
+--
+-- TOC entry 179 (class 1259 OID 2772367)
+-- Name: node_qp_questions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE node_qp_questions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.node_qp_questions_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2042 (class 0 OID 0)
+-- Dependencies: 179
+-- Name: node_qp_questions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE node_qp_questions_id_seq OWNED BY node_qp_questions.id;
+
+
+--
+-- TOC entry 184 (class 1259 OID 2772395)
+-- Name: node_qp_studentanswers; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE node_qp_studentanswers (
+    id integer NOT NULL,
+    ansid integer,
+    questionid integer,
+    studentid numeric
+);
+
+
+ALTER TABLE public.node_qp_studentanswers OWNER TO postgres;
+
+--
+-- TOC entry 183 (class 1259 OID 2772393)
+-- Name: node_qp_studentanswers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE node_qp_studentanswers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.node_qp_studentanswers_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2043 (class 0 OID 0)
+-- Dependencies: 183
+-- Name: node_qp_studentanswers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE node_qp_studentanswers_id_seq OWNED BY node_qp_studentanswers.id;
+
+
+SET default_with_oids = true;
+
+--
+-- TOC entry 172 (class 1259 OID 2772245)
+-- Name: school; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE school (
+    id integer NOT NULL,
+    login character varying(64) NOT NULL,
+    password character varying(64),
+    name character varying(64) NOT NULL,
+    address character varying(64),
+    address2 character varying(32),
+    city character varying(32),
+    statecode character varying(2) NOT NULL,
+    zip5 character varying(5),
+    zip4 character varying(4),
+    contactfirst character varying(32),
+    contactlast character varying(32),
+    email character varying(64),
+    phone character varying(20),
+    created timestamp with time zone DEFAULT now(),
+    active boolean DEFAULT true
+);
+
+
+ALTER TABLE public.school OWNER TO postgres;
+
+--
+-- TOC entry 171 (class 1259 OID 2772243)
+-- Name: school_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE school_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.school_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2044 (class 0 OID 0)
+-- Dependencies: 171
+-- Name: school_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE school_id_seq OWNED BY school.id;
+
+
+--
+-- TOC entry 178 (class 1259 OID 2772290)
+-- Name: student; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE student (
+    id integer NOT NULL,
+    classid integer NOT NULL,
+    password character varying(16) NOT NULL,
+    lastname character varying(32) NOT NULL,
+    firstname character varying(32) NOT NULL,
+    gender character(1) NOT NULL,
+    created timestamp with time zone DEFAULT now(),
+    active boolean DEFAULT true,
+    parentemail character varying(64),
+    masterstudentid integer
+);
+
+
+ALTER TABLE public.student OWNER TO postgres;
+
+--
+-- TOC entry 177 (class 1259 OID 2772288)
+-- Name: student_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE student_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.student_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2045 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: student_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE student_id_seq OWNED BY student.id;
+
+
+--
+-- TOC entry 1864 (class 2604 OID 2772261)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY class ALTER COLUMN id SET DEFAULT nextval('class_id_seq'::regclass);
+
+
+--
+-- TOC entry 1867 (class 2604 OID 2772276)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY masterstudent ALTER COLUMN id SET DEFAULT nextval('masterstudent_id_seq'::regclass);
+
+
+--
+-- TOC entry 1872 (class 2604 OID 2772385)
+-- Name: ansid; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY node_qp_answers ALTER COLUMN ansid SET DEFAULT nextval('node_qp_answers_ansid_seq'::regclass);
+
+
+--
+-- TOC entry 1871 (class 2604 OID 2772372)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY node_qp_questions ALTER COLUMN id SET DEFAULT nextval('node_qp_questions_id_seq'::regclass);
+
+
+--
+-- TOC entry 1873 (class 2604 OID 2772398)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY node_qp_studentanswers ALTER COLUMN id SET DEFAULT nextval('node_qp_studentanswers_id_seq'::regclass);
+
+
+--
+-- TOC entry 1861 (class 2604 OID 2772248)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY school ALTER COLUMN id SET DEFAULT nextval('school_id_seq'::regclass);
+
+
+--
+-- TOC entry 1868 (class 2604 OID 2772293)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY student ALTER COLUMN id SET DEFAULT nextval('student_id_seq'::regclass);
+
+
+--
+-- TOC entry 2020 (class 0 OID 2772258)
+-- Dependencies: 174
+-- Data for Name: class; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY class (id, schoolid, login, password, name, teacherfirst, teacherlast, email, created, active) FROM stdin;
+252967	15936	TEC180988	STRIDE	TestClass for FirstPass	Mani	Dwivedi	maxwell@123789.org	2016-08-19 17:52:01.628+05:30	t
+240494	15936	TEC27971	qPMa1TfA	Ms. Jones' 4th Grade Class	MANI	SHANKAR	maxwell@123789.org	2013-11-25 22:55:00.139015+05:30	t
+253000	15936	TEC548790	4321	Mani	TEST	TEST	maxwell@123789.org	2016-10-11 22:25:49.068+05:30	t
+252876	15936	TEC21908	STRIDE	Akshay's Class 1	Akshay	Jain	akjain@123789.org	2016-03-15 21:47:28.362+05:30	t
+253004	15936	TEC863160	demo	Akshay's New class	Akshay1	Jain1	maxwell@123789.org	2016-10-21 17:29:33.255+05:30	t
+\.
+
+
+--
+-- TOC entry 2046 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('class_id_seq', 1, false);
+
+
+--
+-- TOC entry 2022 (class 0 OID 2772273)
+-- Dependencies: 176
+-- Data for Name: masterstudent; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY masterstudent (id, schoolid, uid, password, lastname, firstname, gender, birthdate, parentemail) FROM stdin;
+915237	15936	st12345	123456	lastname	student1	M	\N	
+913263	15936	Cole Shulman	demo1	Shulman	Cole	M	\N	
+914288	15936	Student002		Campbell	Duke	M	\N	
+914667	15936	3214599874556	123456	lasttest	firsttest	M	\N	test124@123789.org
+927139	15936	shane.john	1234	john	shane	M	\N	
+914274	15936	9818389192		Dwivedi	Mani	M	\N	
+927148	15936	newst01		monty	Monty1	M	\N	
+927149	15936	newst02		Monty	monty2	M	\N	
+913262	15936	Student Blue 1		Deitz	Jason	M	\N	
+914702	15936	student 123		Akimodo	Jesse	M	\N	
+914293	15936	Student006		Sanchez	Rader	M	\N	
+914290	15936	Student003		Barnes	Carone	M	\N	
+914289	15936	Student001		Bergman	Lola	M	\N	
+914740	15936	student007		Collins	Dina	F	\N	
+914741	15936	student008		Dominguez	Gina	M	\N	
+914742	15936	student009		Sanchez	Carlos	M	\N	
+914743	15936	Student0010		Sorkin	Zack	F	\N	
+914292	15936	Student005	123456a	Worthington	Mina	M	\N	
+927150	15936	newst03		monty	Monty3	M	\N	
+921272	15936	12345		Tester	Tester	F	\N	
+927185	15936	uidtest789	123456	Chan	Jackie	F	\N	test123@123789.org
+927186	15936	uidtest654	123456	Suzuki	Maria	M	\N	test124@123789.org
+927319	15936	13937	v6H)W}QY	Rhinier	Rylee	F	\N	
+927320	15936	13961	v6H)W}QY	Collier	Jaeden	M	\N	
+927324	15936	nabhya.dwivedi		Dwivedi	Nabhya	M	\N	
+927272	15936	chickendoodle1		Oodle2	Noodle2	F	\N	shouldNOTaccept@sameUID.diffnames 
+927274	15936	benandjerry		Jerry	Ben	F	\N	shouldaccept@newuid.andname
+927275	15936	Grassmunkey		Munk	Garry	F	\N	shouldaccept@uidandname.match
+914703	15936	mm555mm		Jackson	Chelsea	F	\N	test123@123789.org
+914291	15936	Student004		Green	Elvin	M	\N	
+\.
+
+
+--
+-- TOC entry 2047 (class 0 OID 0)
+-- Dependencies: 175
+-- Name: masterstudent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('masterstudent_id_seq', 1, false);
+
+
+--
+-- TOC entry 2028 (class 0 OID 2772382)
+-- Dependencies: 182
+-- Data for Name: node_qp_answers; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY node_qp_answers (ansid, questionid, answer) FROM stdin;
+5	2	Extremely easy
+6	2	Very easy
+12	3	Not at all clearly
+11	3	Not so clearly
+10	3	Somewhat clearly
+9	3	Extremely clearly
+8	2	Not at all easy
+7	2	Not so easy
+\.
+
+
+--
+-- TOC entry 2048 (class 0 OID 0)
+-- Dependencies: 181
+-- Name: node_qp_answers_ansid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('node_qp_answers_ansid_seq', 12, true);
+
+
+--
+-- TOC entry 2026 (class 0 OID 2772369)
+-- Dependencies: 180
+-- Data for Name: node_qp_questions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY node_qp_questions (id, question, classid) FROM stdin;
+3	How clearly did your instructor explain the course material?	240494
+2	How easy is it to get the resources you need at this school?	240494
+\.
+
+
+--
+-- TOC entry 2049 (class 0 OID 0)
+-- Dependencies: 179
+-- Name: node_qp_questions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('node_qp_questions_id_seq', 3, true);
+
+
+--
+-- TOC entry 2030 (class 0 OID 2772395)
+-- Dependencies: 184
+-- Data for Name: node_qp_studentanswers; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY node_qp_studentanswers (id, ansid, questionid, studentid) FROM stdin;
+2	8	2	3057870
+3	6	2	3057867
+4	10	3	3057867
+5	11	3	3057870
+6	5	2	3057868
+7	12	3	3057868
+8	10	3	3057869
+9	6	2	3057869
+10	5	2	3056771
+11	12	3	3056771
+12	9	3	3105268
+13	6	2	240494
+14	8	2	3105268
+15	11	3	3056770
+16	6	2	3056770
+17	12	3	3058273
+18	12	3	3057872
+19	5	2	3057872
+20	6	2	3058308
+21	11	3	3058308
+22	6	2	3105279
+23	11	3	3105279
+\.
+
+
+--
+-- TOC entry 2050 (class 0 OID 0)
+-- Dependencies: 183
+-- Name: node_qp_studentanswers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('node_qp_studentanswers_id_seq', 23, true);
+
+
+--
+-- TOC entry 2018 (class 0 OID 2772245)
+-- Dependencies: 172
+-- Data for Name: school; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY school (id, login, password, name, address, address2, city, statecode, zip5, zip4, contactfirst, contactlast, email, phone, created, active) FROM stdin;
+15936	SCH999999	demo	Men In Blue School	95 Craigsville Rd		Craigsville	WV	26205		Mani	Dwivedi	msdwivedi@gmail.com	+1 304-742-5118	2013-11-25 22:49:44.379314+05:30	t
+\.
+
+
+--
+-- TOC entry 2051 (class 0 OID 0)
+-- Dependencies: 171
+-- Name: school_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('school_id_seq', 1, false);
+
+
+--
+-- TOC entry 2024 (class 0 OID 2772290)
+-- Dependencies: 178
+-- Data for Name: student; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY student (id, classid, password, lastname, firstname, gender, created, active, parentemail, masterstudentid) FROM stdin;
+3060834	240494	123456	lastname	student1	M	2014-10-02 17:45:48.689278+05:30	t		915237
+3056771	240494	demo1	Shulman	Cole	M	2013-11-25 22:59:21.08339+05:30	t		913263
+3057867	240494		Campbell	Duke	M	2014-03-07 04:53:19.996266+05:30	t		914288
+3105268	240494	1234	john	shane	M	2014-11-06 13:43:20.602958+05:30	t		927139
+3060824	240494		Dwivedi	Mani	M	2014-09-29 22:46:24.469258+05:30	t		914274
+3105277	240494		monty	Monty1	M	2014-11-13 18:20:22.551854+05:30	t		927148
+3105278	240494		Monty	monty2	M	2014-11-13 18:20:50.485036+05:30	t		927149
+3056770	240494		Deitz	Jason	M	2013-11-25 22:57:41.454189+05:30	t		913262
+3058273	240494		Akimodo	Jesse	M	2014-06-17 20:18:39.777607+05:30	t		914702
+3057872	240494		Sanchez	Rader	M	2014-03-07 04:56:13.799259+05:30	t		914293
+3057869	240494		Barnes	Carone	M	2014-03-07 04:54:58.059114+05:30	t		914290
+3057868	240494		Bergman	Lola	M	2014-03-07 04:54:39.931777+05:30	t		914289
+3058305	240494		Collins	Dina	F	2014-07-10 18:31:14.51855+05:30	t		914740
+3058306	240494		Dominguez	Gina	M	2014-07-10 18:31:53.298774+05:30	t		914741
+3058307	240494		Sanchez	Carlos	M	2014-07-10 18:32:59.468022+05:30	t		914742
+3058308	240494		Sorkin	Zack	F	2014-07-10 18:34:11.684545+05:30	t		914743
+3057871	240494	123456a	Worthington	Mina	M	2014-03-07 04:55:42.372219+05:30	t		914292
+3105279	240494		monty	Monty3	M	2014-11-13 18:48:40.140927+05:30	t		927150
+3105310	240494	123456	Chan	Jackie	F	2015-04-07 14:16:50.108+05:30	t	test123@123789.org	927185
+3105314	240494	123456	Suzuki	Maria	M	2015-04-07 14:25:22.442+05:30	t	test124@123789.org	927186
+3105649	240494	v6H)W}QY	Rhinier	Rylee	F	2016-09-27 20:28:14.71+05:30	t		927319
+3105650	240494	v6H)W}QY	Collier	Jaeden	M	2016-09-27 20:28:15.583+05:30	t		927320
+3105654	253004		Dwivedi	Nabhya	M	2016-04-23 12:41:50.475+05:30	t		927324
+3105613	240494		Oodle2	Noodle2	F	2016-03-30 00:22:15.203+05:30	t	shouldNOTaccept@sameUID.diffnames	927272
+3105614	240494		Jerry	Ben	F	2016-03-30 00:22:15.24+05:30	t	shouldaccept@newuid.andname	927274
+3105615	240494		Munk	Garry	F	2016-03-30 00:22:15.243+05:30	t	shouldaccept@uidandname.match	927275
+3058275	240494		Jackson	Chelsea	F	2014-06-17 23:14:14.509682+05:30	t	test123@123789.org	914703
+3122878	252967		Jackson	Chelsea	F	2016-12-29 00:37:38.883+05:30	t	test123@123789.org	914703
+3122877	252967		Green	Elvin	M	2016-12-28 23:06:37.045+05:30	t		914291
+3057870	240494		Green	Elvin	M	2014-03-07 04:55:17.020779+05:30	t		914291
+\.
+
+
+--
+-- TOC entry 2052 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: student_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('student_id_seq', 1, false);
+
+
+--
+-- TOC entry 1880 (class 2606 OID 2772265)
+-- Name: class_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY class
+    ADD CONSTRAINT class_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1882 (class 2606 OID 2772278)
+-- Name: masterstudent_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY masterstudent
+    ADD CONSTRAINT masterstudent_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1898 (class 2606 OID 2772387)
+-- Name: node_qp_answers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY node_qp_answers
+    ADD CONSTRAINT node_qp_answers_pkey PRIMARY KEY (ansid);
+
+
+--
+-- TOC entry 1896 (class 2606 OID 2772374)
+-- Name: node_qp_questions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY node_qp_questions
+    ADD CONSTRAINT node_qp_questions_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1900 (class 2606 OID 2772403)
+-- Name: node_qp_studentanswers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY node_qp_studentanswers
+    ADD CONSTRAINT node_qp_studentanswers_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1876 (class 2606 OID 2772254)
+-- Name: school_login_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY school
+    ADD CONSTRAINT school_login_key UNIQUE (login);
+
+
+--
+-- TOC entry 1878 (class 2606 OID 2772252)
+-- Name: school_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY school
+    ADD CONSTRAINT school_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1890 (class 2606 OID 2772297)
+-- Name: student_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY student
+    ADD CONSTRAINT student_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1892 (class 2606 OID 2772299)
+-- Name: student_unique_uid; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY student
+    ADD CONSTRAINT student_unique_uid UNIQUE (classid, masterstudentid);
+
+
+--
+-- TOC entry 1894 (class 2606 OID 2772301)
+-- Name: uniquename; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY student
+    ADD CONSTRAINT uniquename UNIQUE (classid, lastname, firstname);
+
+
+--
+-- TOC entry 1886 (class 2606 OID 2772280)
+-- Name: uniqueschooluid; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY masterstudent
+    ADD CONSTRAINT uniqueschooluid UNIQUE (schoolid, uid);
+
+
+--
+-- TOC entry 1883 (class 1259 OID 2772286)
+-- Name: masterstudent_schoolid_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX masterstudent_schoolid_idx ON masterstudent USING btree (schoolid);
+
+
+--
+-- TOC entry 1884 (class 1259 OID 2772287)
+-- Name: masterstudent_uid; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX masterstudent_uid ON masterstudent USING btree (lower((uid)::text));
+
+
+--
+-- TOC entry 1874 (class 1259 OID 2772255)
+-- Name: school_login_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX school_login_idx ON school USING btree (login);
+
+
+--
+-- TOC entry 1887 (class 1259 OID 2772312)
+-- Name: student_classid_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX student_classid_idx ON student USING btree (classid);
+
+
+--
+-- TOC entry 1888 (class 1259 OID 2772313)
+-- Name: student_masterstudentid_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX student_masterstudentid_idx ON student USING btree (masterstudentid);
+
+
+--
+-- TOC entry 1909 (class 2620 OID 2772315)
+-- Name: checkIfNameUnMatch; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER "checkIfNameUnMatch" BEFORE INSERT ON student FOR EACH ROW EXECUTE PROCEDURE "checkMatchingStudentName"();
+
+
+--
+-- TOC entry 1901 (class 2606 OID 2772266)
+-- Name: class_schoolid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY class
+    ADD CONSTRAINT class_schoolid_fkey FOREIGN KEY (schoolid) REFERENCES school(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1902 (class 2606 OID 2772281)
+-- Name: masterstudent_schoolid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY masterstudent
+    ADD CONSTRAINT masterstudent_schoolid_fkey FOREIGN KEY (schoolid) REFERENCES school(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1906 (class 2606 OID 2772388)
+-- Name: node_qp_answers_questionid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY node_qp_answers
+    ADD CONSTRAINT node_qp_answers_questionid_fkey FOREIGN KEY (questionid) REFERENCES node_qp_questions(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1905 (class 2606 OID 2772375)
+-- Name: node_qp_questions_classid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY node_qp_questions
+    ADD CONSTRAINT node_qp_questions_classid_fkey FOREIGN KEY (classid) REFERENCES class(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1907 (class 2606 OID 2772404)
+-- Name: node_qp_studentanswers_ansid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY node_qp_studentanswers
+    ADD CONSTRAINT node_qp_studentanswers_ansid_fkey FOREIGN KEY (ansid) REFERENCES node_qp_answers(ansid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1908 (class 2606 OID 2772409)
+-- Name: node_qp_studentanswers_questionid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY node_qp_studentanswers
+    ADD CONSTRAINT node_qp_studentanswers_questionid_fkey FOREIGN KEY (questionid) REFERENCES node_qp_questions(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1903 (class 2606 OID 2772302)
+-- Name: student_classid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY student
+    ADD CONSTRAINT student_classid_fkey FOREIGN KEY (classid) REFERENCES class(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1904 (class 2606 OID 2772307)
+-- Name: student_masterstudentid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY student
+    ADD CONSTRAINT student_masterstudentid_fkey FOREIGN KEY (masterstudentid) REFERENCES masterstudent(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2037 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2017-02-07 15:49:40
+
+--
+-- PostgreSQL database dump complete
+--
+

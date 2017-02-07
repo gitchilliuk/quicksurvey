@@ -1,0 +1,30 @@
+<div class="page-header">
+    <h1>Hello {{user.firstname}} {{user.lastname}} here is the result</h1>
+</div>
+<div class="well well-lg">
+    <strong>Question</strong><br>{{poll.question}}
+</div>
+<div ng-show="poll.userVoted">
+    <table class="result-table">
+        <tr ng-repeat="choice in poll.choices">
+            <td>{{choice.text}}</td>
+            <td>
+                <table style="background-color: lightblue; width: {{choice.votes / poll.totalVotes * 100}}%; text-align: right">
+                    <tr><td>{{choice.votes}}</td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <p>
+        <em>
+            {{poll.totalVotes}} votes counted so far.
+        </em>
+    </p>
+    <hr />
+    <p>
+        <a href="#/polls" class="btn btn-default" role="button">
+            <span class="glyphicon glyphicon-arrow-left"></span> Back to Poll List
+        </a>
+    </p>
+</div>
+<p>&nbsp;</p>

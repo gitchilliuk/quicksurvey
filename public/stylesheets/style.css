@@ -1,0 +1,88 @@
+body {
+    padding-top: 50px;
+}
+
+.tab-content .lead {
+    margin-top: 20px;
+}
+
+.result-table {
+    margin: 20px 0;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.result-table td {
+    padding: 8px;
+}
+
+.result-table > tbody > tr > td:first-child {
+    width: 25%;
+    max-width: 300px;
+    text-align: right;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.ata-asE {
+    bottom: 1px;
+    right: 16px;
+    z-index: 9;
+    background-color: #fff1a8;
+    border: 1px solid #ccc;
+    font-size: 80%;
+    color: #222;
+    padding: 10px;
+    position: fixed;
+    font-weight: bold;
+}
+.ata-asJ {
+    color: #222;
+    white-space: nowrap;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.list-group-item span span.Voted {
+    font-style: italic;
+    color:grey;   
+    cursor: pointer;
+}
+.list-group-item span span.NotVoted {
+    font-weight: bold;
+    display: block;
+    cursor: pointer;
+}
