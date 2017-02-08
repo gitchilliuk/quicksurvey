@@ -1,7 +1,5 @@
 # Project
-
 Quick Survey/Poll between class teacher and students, could be used as a feedback form, the teacher can organize some kind of voting among students, or create a general survey for students.
-
 
 ## Getting Started
 
